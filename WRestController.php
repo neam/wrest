@@ -42,7 +42,7 @@ abstract class WRestController extends CController
 	 */
 	public function sendResponse($status = 200, $bodyParams = array())
 	{
-		if ($status != 200) {
+		if ($status != 200 && $status != 201) {
 			$bodyParams = CMap::mergeArray($bodyParams, $this->response->getErrorMessage($status));
 		}
 		$this->response->setStatus($status);
