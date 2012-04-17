@@ -56,8 +56,10 @@ class XmlResponse extends WRestResponse
 			// no numeric keys in our xml please!
 			if (is_numeric($key))
 			{
-				$numeric = 1;
+				$numeric = true;
 				$key = $defaultKey;
+			} else {
+				$numeric = false;
 			}
 
 			// delete any char not allowed in XML element names
