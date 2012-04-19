@@ -74,7 +74,7 @@ abstract class WRestController extends CController
 		if ($id) {
 			$model = $modelName::model()->findByPk($id);
 			if (is_null($model)) {
-				$this->sendResponse(400);
+				$this->sendResponse(404);
 			}
 		} else {
 			$model = new $modelName();
