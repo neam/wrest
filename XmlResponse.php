@@ -17,7 +17,8 @@ class XmlResponse extends WRestResponse
 
 	public function setParams($params = array())
 	{
-		// Associative single-valued array is treated as the root element
+
+		// Associative single-valued array can be used to specify the root element (does not work for error request due to the merged error response elements)
 		if (is_array($params) && count($params) == 1 && ($keys = array_keys($params)) && !is_numeric($keys[0])) //count($params) == 1 && ($keys = array_keys($params)) && !is_int($keys[0])
 		{
 			$xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><{$keys[0]} />");
@@ -25,7 +26,18 @@ class XmlResponse extends WRestResponse
 			$this->_body = self::toXml($data, null, $xml);
 		} else
 		{
-			$xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><response />");
+
+			// The param _root can be used to specify the root element
+			if (isset($params['_root']))
+			{
+				$root = $params['_root'];
+				unset($params['_root']);
+			} else
+			{
+				$root = "response";
+			}
+
+			$xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><$root />");
 			$this->_body = self::toXml($params, null, $xml);
 		}
 		return $this;
@@ -43,7 +55,8 @@ class XmlResponse extends WRestResponse
 	public static function toXML($data, $defaultKey = null, &$xml = null)
 	{
 
-		if (is_null($defaultKey)) $defaultKey = 'element';
+		if (is_null($defaultKey))
+			$defaultKey = 'element';
 
 		// turn off compatibility mode as simple xml throws a wobbly if you don't.
 		if (ini_get('zend.ze1_compatibility_mode') == 1)
@@ -58,7 +71,8 @@ class XmlResponse extends WRestResponse
 			{
 				$numeric = true;
 				$key = $defaultKey;
-			} else {
+			} else
+			{
 				$numeric = false;
 			}
 
