@@ -15,7 +15,7 @@ class XmlResponse extends WRestResponse
         return "application/xml";
     }
 
-    public function setParams($params = array())
+    public function setParams($params = array(), $options = array())
     {
 
         // Parse options
