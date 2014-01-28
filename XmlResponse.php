@@ -17,19 +17,26 @@ class XmlResponse extends WRestResponse
 
     public function setParams($params = array())
     {
-        // Associative single-valued array is treated as the root element
-        if (is_array($params) && count($params) == 1 && ($keys = array_keys($params)) && !is_numeric(
-                $keys[0]
-            )
-        ) //count($params) == 1 && ($keys = array_keys($params)) && !is_int($keys[0])
-        {
-            $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><{$keys[0]} />");
+
+        // Parse options
+        $rootKey = isset($options['rootKey']) ? $options['rootKey'] : null;
+        $defaultKey = isset($options['defaultKey']) ? $options['defaultKey'] : null;
+
+        // Associative single-valued array is treated as the root element if not yet specified
+        if (is_null($rootKey)
+            && is_array($params) && count($params) == 1
+            && ($keys = array_keys($params)) && !is_numeric($keys[0])
+        ) {
+            $options['rootKey'] = $keys[0];
             $data = $params[$keys[0]];
-            $this->_body = self::toXml($data, null, $xml);
         } else {
-            $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><response />");
-            $this->_body = self::toXml($params, null, $xml);
+            $options['rootKey'] = 'response';
+            $data = $params;
         }
+
+        $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><{$options['rootKey']} />");
+        $this->_body = self::toXml($data, $defaultKey, $xml);
+
         return $this;
     }
 
